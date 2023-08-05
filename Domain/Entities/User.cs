@@ -12,7 +12,6 @@ public class User : Entity
     public string? LastName { get; set; }
     public string? Email { get; set; }
     public string? Password { get; set; }
-
-    public List<Ticket> Tickets { get; set; }
+    public List<Ticket>? Tickets { get; set; }
 
 }

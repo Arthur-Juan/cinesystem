@@ -18,4 +18,5 @@ public class Movie : Entity
 public class Category : Entity
 {
     public string? Name { get; set; }
+    public List<Movie>? Movies { get; set; }
 }

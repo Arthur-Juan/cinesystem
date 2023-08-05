@@ -14,12 +14,13 @@ namespace Infra.Extension;
 
 public static class ConfigureInfra
 {
-    public static void ConfigInfra(this IServiceCollection services, string connection)  
+    public static void ConfigInfra(this IServiceCollection services, string? connection)  
     {
         services.AddDbContext<AppDbContext>(opt =>
         {
             opt.UseSqlServer(connection);
         });
+
 
         services.AddAutoMapper(typeof(AutoMapperConfig));
     }

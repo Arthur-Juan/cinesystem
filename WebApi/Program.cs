@@ -1,4 +1,6 @@
+using Infra.Data.Efcore;
 using Infra.Extension;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +13,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
-builder.Services.ConfigInfra("xpto");
+builder.Services.ConfigInfra(connection: builder.Configuration.GetConnectionString("Default")); ;
 
 var log = new LoggerConfiguration()
     .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day)
@@ -19,6 +21,13 @@ var log = new LoggerConfiguration()
 
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    dbContext.Database.Migrate();
+}
 
 // Configure the HTTP request pipeline.
 

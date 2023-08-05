@@ -18,25 +18,28 @@ public class Room : Entity
     public List<Session>? Sessions { get; set; }
     public int Number { get; set; }
     public List<Chair>? Chairs { get; set; }
+    public Cinema? Cinema { get; set; }
 
 }
 
 public class Chair : Entity
 {
     public int Number { get; set; }
+    public Room? Room { get; set; }
 }
 
 public class Session : Entity 
 { 
     public Movie? Movie { get; set; }    
     public Interval? Interval { get; set; }
-    public List<Ticket>? PossibleTickets { get; set; }
+    public List<Ticket>? Tickets { get; set; }
+    public Room? Room { get; set; }
 }
 
 
 public class Ticket : Entity
 {
-    public decimal Price { get; set; }
+    public double Price { get; set; }
     public Session? Session { get; set; }
     public User? UserOwn { get; set; }
     public Chair? Chair { get; set; }
