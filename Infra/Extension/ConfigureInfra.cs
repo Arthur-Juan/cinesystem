@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
-
+using Infra.Mapper;
 
 namespace Infra.Extension;
 
@@ -21,6 +21,6 @@ public static class ConfigureInfra
             opt.UseSqlServer(connection);
         });
 
-        services.AddAutoMapper();
+        services.AddAutoMapper(typeof(AutoMapperConfig));
     }
 }
