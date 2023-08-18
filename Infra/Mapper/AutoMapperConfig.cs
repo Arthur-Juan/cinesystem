@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,5 +10,8 @@ namespace Infra.Mapper;
 
 public class AutoMapperConfig : Profile
 {
+    public AutoMapperConfig()
+    {
     //CreateMap<Entity, EntityDto>.ReverseMap();
+    }
 }

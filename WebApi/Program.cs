@@ -1,5 +1,6 @@
 using Infra.Data.Efcore;
 using Infra.Extension;
+using IoC;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -13,7 +14,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
-builder.Services.ConfigInfra(connection: builder.Configuration.GetConnectionString("Default")); ;
+DependencyInjection.ConfigureDependency(builder.Services, builder.Configuration.GetConnectionString("Default"));
+
 
 var log = new LoggerConfiguration()
     .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day)

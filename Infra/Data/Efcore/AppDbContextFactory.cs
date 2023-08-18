@@ -18,7 +18,7 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
         var connectionString = configuration.GetConnectionString("Default");
 
         var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-        optionsBuilder.UseSqlServer("Server=db;Database=cinesystem;User=sa;Password=S3cur3P@ssW0rd!;");
+        optionsBuilder.UseSqlServer("Server=localhost;Database=cinesystem;User Id=SA;Password=S3cur3P@ssW0rd;TrustServerCertificate=true");
 
         return new AppDbContext(optionsBuilder.Options);
     }
