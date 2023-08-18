@@ -35,16 +35,6 @@ public class Signup : ISignup
                 throw new Exception(fail.ErrorMessage);
             }
         }
-/*
-        if (dto.Password != dto.ConfirmPassword)
-        {
-            throw new Exception(DomainErrors.User.PasswordDontMatch);
-        }
-        if (!IsValid(dto.Email))
-        {
-            throw new Exception(DomainErrors.User.InvalidEmailFormat);
-        }
-*/
 
         var userAlearyExists = _context.Users.Where(x => x.Email == dto.Email).FirstOrDefault();
 
@@ -98,19 +88,5 @@ public class Signup : ISignup
         }
     }
 
-    private static bool IsValid(string email)
-    {
-        var valid = true;
 
-        try
-        {
-            var emailAddress = new MailAddress(email);
-        }
-        catch
-        {
-            valid = false;
-        }
-
-        return valid;
-    }
 }
