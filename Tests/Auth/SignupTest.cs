@@ -93,6 +93,7 @@ public class SignupTest
 
     [Theory]
     [InlineData("notanemail")]
+    //[InlineData("invalid@email")]
     public async Task Test_ShouldThrowAnExceptionIfEmailIsInvalid(string invalidEmail)
     {
         ITokenService tokenService = new JwtAdapter();
@@ -159,6 +160,35 @@ public class SignupTest
         var sut = new Signup(dbContext, _mapper, tokenService, cryptoSerice);
         await Assert.ThrowsAsync<Exception>(async () => await sut.SignupAsync(dto));
 
+    }
+
+    [Fact]
+    public async Task Test_CheckIfPasswordIsHashed()
+    {
+        var dto = new UserSignupDTO(
+            FirstName: "teste",
+            LastName: "teste2",
+            Email: "email@email.com",
+            Password: "pass",
+            ConfirmPassword: "pass"
+        );
+
+        ITokenService tokenService = new JwtAdapter();
+        var dbContext = CreateDbContext();
+        ICryptoService cryptoSerice = new BCryptAdapter();
+        var mockCrypt = new Mock<ICryptoService>();
+
+        mockCrypt.Setup( x => x.Encrypt(dto.Password)).Returns("hashed");
+        var cryptSvc = mockCrypt.Object;
+        var hashed = cryptSvc.Encrypt(dto.Password);
+        var sut = new Signup(dbContext, _mapper, tokenService, cryptSvc);
+        
+        var result = await sut.SignupAsync(dto);
+        var savedUser = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+        
+        Assert.NotNull(savedUser);
+
+        Assert.True(savedUser.Password == hashed);
     }
 
     public class DtoWithDataMissing
