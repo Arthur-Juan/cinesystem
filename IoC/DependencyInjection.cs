@@ -35,7 +35,7 @@ namespace IoC
             });
 
             services.AddAutoMapper(typeof(AutoMapperConfig));
-            services.AddScoped<ITokenService, JwtAdapter>();
+            //services.AddScoped<ITokenService, JwtAdapter>();
             services.AddScoped<ICryptoService, BCryptAdapter>();
         }
     }
@@ -44,7 +44,15 @@ namespace IoC
         public AutoMapperConfig()
         {
             CreateMap<User, UserSignupDTO>().ReverseMap();
-            CreateMap<User, UserLoggedDTO>().ReverseMap();
+
+           /* CreateMap<User, UserLoggedDTO>().ReverseMap()
+                .ForCtorParam(nameof(User.FirstName), opt => opt.MapFrom(source => source.FirstName))
+                .ForCtorParam(nameof(User.LastName), opt => opt.MapFrom(source => source.LastName))
+                .ForCtorParam(nameof(User.Email), opt => opt.MapFrom(source => source.Email))
+                .ForAllMembers(opt => opt.Ignore());*/
+
+            CreateMap<User, UserLoggedDTO>()
+                .ConstructUsing(x => new UserLoggedDTO(x.FirstName, x.LastName, x.Email, null));
         }
     }
 }

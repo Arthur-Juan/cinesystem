@@ -5,7 +5,6 @@ using Application.Interfaces;
 using Domain.Entities;
 using Domain.Services;
 using Infra.Data.Efcore;
-using System.Net.Mail;
 using Application.Errors;
 using FluentValidation;
 
@@ -44,14 +43,14 @@ public class Signup : ISignup
         }
 
         var hash = _cryptoService.Encrypt(dto.Password);
-        var entity = _mapper.Map<User>(dto);
+        var entity = UserSignupDTO.mapToEntity(_mapper, dto);
         entity.Password = hash;
 
         await _context.AddAsync(entity);
 
-        var token = await _tokenService.GenerateTokenAsync(entity); 
-        
-        var result = _mapper.Map<UserLoggedDTO>(entity) with { Token = token };
+        var token = await _tokenService.GenerateTokenAsync(entity);
+
+        var result = UserLoggedDTO.mapFromEntity(entity, token);
 
         await _context.SaveChangesAsync();
         return result;
