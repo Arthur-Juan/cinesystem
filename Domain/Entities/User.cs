@@ -14,4 +14,9 @@ public class User : Entity
     public string? Password { get; set; }
     public List<Ticket>? Tickets { get; set; }
 
+
+    public string GetFullName()
+    {
+        return $"{FirstName} {LastName}";
+    }
 }
