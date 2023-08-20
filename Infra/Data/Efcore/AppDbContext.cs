@@ -27,7 +27,8 @@ public class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        builder.ApplyConfiguration(new EntityConfiguration());
+
+        //builder.ApplyConfiguration(new EntityConfiguration());
 
         builder.ApplyConfiguration(new CinemaConfiguration());
 

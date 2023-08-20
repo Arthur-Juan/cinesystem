@@ -4,6 +4,7 @@ using Infra.Data.Efcore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infra.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230820193507_UpdateTables")]
+    partial class UpdateTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,35 +40,54 @@ namespace Infra.Migrations
                     b.ToTable("CategoryMovie");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Category", b =>
+            modelBuilder.Entity("Domain.Entities.Entity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("CreatedAt")
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Discriminator")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Entity");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("Entity");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("Domain.Entities.Category", b =>
+                {
+                    b.HasBaseType("Domain.Entities.Entity");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.HasKey("Id");
+                    b.ToTable("Entity", t =>
+                        {
+                            t.Property("Name")
+                                .HasColumnName("Category_Name");
+                        });
 
-                    b.ToTable("Categories");
+                    b.HasDiscriminator().HasValue("Category");
                 });
 
             modelBuilder.Entity("Domain.Entities.Chair", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CreatedAt")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasBaseType("Domain.Entities.Entity");
 
                     b.Property<int>("Number")
                         .HasColumnType("int");
@@ -73,42 +95,26 @@ namespace Infra.Migrations
                     b.Property<Guid?>("RoomId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
-
                     b.HasIndex("RoomId");
 
-                    b.ToTable("Chairs");
+                    b.HasDiscriminator().HasValue("Chair");
                 });
 
             modelBuilder.Entity("Domain.Entities.Cinema", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CreatedAt")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasBaseType("Domain.Entities.Entity");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.HasKey("Id");
-
-                    b.ToTable("Cinemas");
+                    b.HasDiscriminator().HasValue("Cinema");
                 });
 
             modelBuilder.Entity("Domain.Entities.Movie", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CreatedAt")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasBaseType("Domain.Entities.Entity");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -126,43 +132,39 @@ namespace Infra.Migrations
                     b.Property<float>("Stars")
                         .HasColumnType("real");
 
-                    b.HasKey("Id");
+                    b.ToTable("Entity", t =>
+                        {
+                            t.Property("Name")
+                                .HasColumnName("Movie_Name");
+                        });
 
-                    b.ToTable("Movies");
+                    b.HasDiscriminator().HasValue("Movie");
                 });
 
             modelBuilder.Entity("Domain.Entities.Room", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.HasBaseType("Domain.Entities.Entity");
 
                     b.Property<Guid?>("CinemaId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("CreatedAt")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("Number")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
-
                     b.HasIndex("CinemaId");
 
-                    b.ToTable("Rooms");
+                    b.ToTable("Entity", t =>
+                        {
+                            t.Property("Number")
+                                .HasColumnName("Room_Number");
+                        });
+
+                    b.HasDiscriminator().HasValue("Room");
                 });
 
             modelBuilder.Entity("Domain.Entities.Session", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CreatedAt")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasBaseType("Domain.Entities.Entity");
 
                     b.Property<Guid?>("MovieId")
                         .HasColumnType("uniqueidentifier");
@@ -170,27 +172,25 @@ namespace Infra.Migrations
                     b.Property<Guid?>("RoomId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
-
                     b.HasIndex("MovieId");
 
                     b.HasIndex("RoomId");
 
-                    b.ToTable("Sessions");
+                    b.ToTable("Entity", t =>
+                        {
+                            t.Property("RoomId")
+                                .HasColumnName("Session_RoomId");
+                        });
+
+                    b.HasDiscriminator().HasValue("Session");
                 });
 
             modelBuilder.Entity("Domain.Entities.Ticket", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.HasBaseType("Domain.Entities.Entity");
 
                     b.Property<Guid?>("ChairId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CreatedAt")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("Price")
                         .HasColumnType("float");
@@ -201,27 +201,18 @@ namespace Infra.Migrations
                     b.Property<Guid?>("UserOwnId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
-
                     b.HasIndex("ChairId");
 
                     b.HasIndex("SessionId");
 
                     b.HasIndex("UserOwnId");
 
-                    b.ToTable("Tickets");
+                    b.HasDiscriminator().HasValue("Ticket");
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CreatedAt")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasBaseType("Domain.Entities.Entity");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -242,12 +233,11 @@ namespace Infra.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
-
                     b.HasIndex("Email")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL");
 
-                    b.ToTable("Users");
+                    b.HasDiscriminator().HasValue("User");
                 });
 
             modelBuilder.Entity("CategoryMovie", b =>
@@ -255,7 +245,7 @@ namespace Infra.Migrations
                     b.HasOne("Domain.Entities.Category", null)
                         .WithMany()
                         .HasForeignKey("CategoriesId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.Movie", null)
@@ -308,7 +298,7 @@ namespace Infra.Migrations
 
                             b1.HasKey("SessionId");
 
-                            b1.ToTable("Sessions");
+                            b1.ToTable("Entity");
 
                             b1.WithOwner()
                                 .HasForeignKey("SessionId");

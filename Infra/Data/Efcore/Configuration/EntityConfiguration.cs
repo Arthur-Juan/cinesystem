@@ -18,7 +18,7 @@ public class EntityConfiguration : IEntityTypeConfiguration<Entity>
     {
         builder.HasKey(x=> x.Id);
         builder.Property(x => x.CreatedAt).ValueGeneratedOnAdd();
-        builder.Property(x => x.UpdatedAt).ValueGeneratedOnAddOrUpdate();
+       // builder.Property(x => x.UpdatedAt).ValueGeneratedOnAddOrUpdate();
 
     }
 }
@@ -27,6 +27,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
+        builder.Property(x => x.CreatedAt).ValueGeneratedOnAdd();
+       // builder.Property(x => x.UpdatedAt).ValueGeneratedOnAddOrUpdate();
+
         builder.Property(x=>x.FirstName)
             .IsRequired()
             .HasMaxLength(255);
@@ -44,7 +47,14 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(x => x.Password)
             .IsRequired();
-    }   
+
+        builder.Property(x => x.CreatedAt)
+            .ValueGeneratedOnAdd();
+
+        //builder.Property(x => x.UpdatedAt)
+          //  .ValueGeneratedOnAddOrUpdate();
+
+    }
 }
 
 public class CinemaConfiguration : IEntityTypeConfiguration<Cinema>
