@@ -1,4 +1,4 @@
-﻿using Application.Features.Authentication;
+﻿using Application.Features.Authentication;  
 using Domain.Services;
 using Infra.Services;
 using Infra.Data.Efcore;
@@ -13,6 +13,7 @@ using System.Net.Mail;
 using System.Collections;
 using System;
 using System.Runtime.CompilerServices;
+using Microsoft.AspNetCore.Builder;
 
 namespace Tests.Auth;
 
@@ -63,8 +64,8 @@ public class SignupTest
                 Email = "exists@email.com",
                 Password = "abcd",
                 Tickets = null,
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
+                CreatedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),
+                //UpdatedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")
             }
         };
         return users;
@@ -74,7 +75,7 @@ public class SignupTest
     [InlineData("pass123", "anotherpass")]
     public async Task Test_ThrowErrorIfPasswordNotEqual(string password1, string password2)
     {
-        ITokenService tokenService = new JwtAdapter();
+        ITokenService tokenService = new JwtAdapter(WebApplication.CreateBuilder().Configuration["Jwt:Key"]);
         var dbContext = CreateDbContext();
         ICryptoService cryptoSerice = new BCryptAdapter();
 
@@ -96,7 +97,7 @@ public class SignupTest
     //[InlineData("invalid@email")]
     public async Task Test_ShouldThrowAnExceptionIfEmailIsInvalid(string invalidEmail)
     {
-        ITokenService tokenService = new JwtAdapter();
+        ITokenService tokenService = new JwtAdapter(WebApplication.CreateBuilder().Configuration["Jwt:Key"]);
         var dbContext = CreateDbContext();
         ICryptoService cryptoSerice = new BCryptAdapter();
 
@@ -127,7 +128,7 @@ public class SignupTest
         var user = GetFakeData().FirstOrDefault();
         var data = new List<User> { user }.AsQueryable();
 
-        ITokenService tokenService = new JwtAdapter();
+        ITokenService tokenService = new JwtAdapter(WebApplication.CreateBuilder().Configuration["Jwt:Key"]);
 
         var dbContext = CreateDbContext();
         ICryptoService cryptoSerice = new BCryptAdapter();
@@ -153,7 +154,7 @@ public class SignupTest
     {
         var dto = new UserSignupDTO(dataMissing?.FirstName, dataMissing?.LastName, dataMissing?.Email, dataMissing?.Password, dataMissing?.ConfirmPassword);
 
-        ITokenService tokenService = new JwtAdapter();
+        ITokenService tokenService = new JwtAdapter(WebApplication.CreateBuilder().Configuration["Jwt:Key"]);
         var dbContext = CreateDbContext();
         ICryptoService cryptoSerice = new BCryptAdapter();
 
@@ -173,7 +174,7 @@ public class SignupTest
             ConfirmPassword: "pass"
         );
 
-        ITokenService tokenService = new JwtAdapter();
+        ITokenService tokenService = new JwtAdapter(WebApplication.CreateBuilder().Configuration["Jwt:Key"]);
         var dbContext = CreateDbContext();
         ICryptoService cryptoSerice = new BCryptAdapter();
         var mockCrypt = new Mock<ICryptoService>();
@@ -189,6 +190,31 @@ public class SignupTest
         Assert.NotNull(savedUser);
 
         Assert.True(savedUser.Password == hashed);
+    }
+
+    [Fact]
+    public async Task Test_IfUserLogInGenerateToken()
+    {
+        var dto = new UserSignupDTO(
+          FirstName: "teste",
+          LastName: "teste2",
+          Email: "email@email.com",
+          Password: "pass",
+          ConfirmPassword: "pass"
+      );
+
+        ITokenService tokenService = new JwtAdapter(WebApplication.CreateBuilder().Configuration["Jwt:Key"]);
+        var dbContext = CreateDbContext();
+        ICryptoService cryptoSerice = new BCryptAdapter();
+
+        var sut = new Signup(dbContext, _mapper, tokenService, cryptoSerice);
+        var result = await sut.SignupAsync(dto);
+        
+        Assert.NotNull(result);
+
+        Console.WriteLine(result);
+
+        Assert.NotNull(result.Token);
     }
 
     public class DtoWithDataMissing

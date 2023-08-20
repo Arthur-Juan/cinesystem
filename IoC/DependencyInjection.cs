@@ -9,34 +9,40 @@ using Infra.Data.Efcore;
 using Infra.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Builder;
 
 namespace IoC
 {
     public static class DependencyInjection
     {
-        public static void ConfigureDependency(this IServiceCollection services, string? connection)
+        public static void ConfigureDependency(this WebApplicationBuilder builder, string? connection)
         {
-            ConfigureInfra(services, connection);
-            ConfigureApp(services);
+            ConfigureInfra(builder, connection);
+            ConfigureApp(builder);
         }
 
-        public static void ConfigureApp(IServiceCollection services)
+        public static void ConfigureApp( WebApplicationBuilder builder)
         {
-            services.AddScoped<ISignup, Signup>();
+            builder.Services.AddScoped<ISignup, Signup>();
         }
 
-        public static void ConfigureInfra(IServiceCollection services, string? connection)
+        public static void ConfigureInfra(WebApplicationBuilder builder, string? connection)
         {
 
-            services.AddDbContext<AppDbContext>(opt =>
+            builder.Services.AddDbContext<AppDbContext>(opt =>
             {
                 opt.UseSqlServer(connection);
             });
 
-            services.AddAutoMapper(typeof(AutoMapperConfig));
-            //services.AddScoped<ITokenService, JwtAdapter>();
-            services.AddScoped<ICryptoService, BCryptAdapter>();
+            builder.Services.AddAutoMapper(typeof(AutoMapperConfig));
+            builder.Services.AddScoped<ICryptoService, BCryptAdapter>();
+            builder.Services.AddScoped<ITokenService>(x =>
+            {
+                return new JwtAdapter(builder.Configuration["Jwt:Key"]!);
+
+            });
+            
         }
     }
     public class AutoMapperConfig : Profile
@@ -51,8 +57,6 @@ namespace IoC
                 .ForCtorParam(nameof(User.Email), opt => opt.MapFrom(source => source.Email))
                 .ForAllMembers(opt => opt.Ignore());*/
 
-            CreateMap<User, UserLoggedDTO>()
-                .ConstructUsing(x => new UserLoggedDTO(x.FirstName, x.LastName, x.Email, null));
         }
     }
 }
