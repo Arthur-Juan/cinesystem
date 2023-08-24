@@ -8,6 +8,7 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Security.Cryptography.Xml;
 using System.Text;
+using WebApi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -82,7 +83,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 // Configure the HTTP request pipeline.
-
+app.ConfigureErrorHandling();
 app.UseSwagger();
 app.UseSwaggerUI();
 

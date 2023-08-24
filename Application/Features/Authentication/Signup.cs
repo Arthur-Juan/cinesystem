@@ -6,6 +6,7 @@ using Domain.Entities;
 using Domain.Services;
 using Infra.Data.Efcore;
 using Application.Errors;
+using Application.Errors.Exceptions;
 using FluentValidation;
 
 namespace Application.Features.Authentication;
@@ -31,7 +32,7 @@ public class Signup : ISignup
         {
             foreach(var fail in isValid.Errors)
             {
-                throw new Exception(fail.ErrorMessage);
+                throw new BadArgumentException(fail.ErrorMessage);
             }
         }
 
@@ -39,7 +40,7 @@ public class Signup : ISignup
 
         if (userAlreadyExists != null)
         {
-            throw new Exception(DomainErrors.User.EmailAlreadyInUse);
+            throw new BadArgumentException(DomainErrors.User.EmailAlreadyInUse);
         }
 
         var hash = _cryptoService.Encrypt(dto.Password);
