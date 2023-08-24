@@ -35,9 +35,9 @@ public class Signup : ISignup
             }
         }
 
-        var userAlearyExists = _context.Users.Where(x => x.Email == dto.Email).FirstOrDefault();
+        var userAlreadyExists = _context.Users.Where(x => x.Email == dto.Email).FirstOrDefault();
 
-        if (userAlearyExists != null)
+        if (userAlreadyExists != null)
         {
             throw new Exception(DomainErrors.User.EmailAlreadyInUse);
         }
