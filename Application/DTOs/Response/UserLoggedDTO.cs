@@ -10,7 +10,7 @@ public record UserLoggedDTO(
     string? Token
     ){
 
-    public static UserLoggedDTO mapFromEntity(User? entity, string? token)
+    public static UserLoggedDTO MapFromEntity(User? entity, string? token)
     {
         return new UserLoggedDTO(
             entity?.Id,

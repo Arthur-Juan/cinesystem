@@ -17,7 +17,7 @@ public record UserSignupDTO(
     string? ConfirmPassword
     )
 {
-    public static User mapToEntity(IMapper _mapper, UserSignupDTO dto)
+    public static User MapToEntity(IMapper _mapper, UserSignupDTO dto)
     {
         return _mapper.Map<User>(dto);
     }

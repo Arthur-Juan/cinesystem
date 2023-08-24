@@ -43,14 +43,14 @@ public class Signup : ISignup
         }
 
         var hash = _cryptoService.Encrypt(dto.Password);
-        var entity = UserSignupDTO.mapToEntity(_mapper, dto);
+        var entity = UserSignupDTO.MapToEntity(_mapper, dto);
         entity.Password = hash;
 
         await _context.AddAsync(entity);
 
         var token = await _tokenService.GenerateTokenAsync(entity);
 
-        var result = UserLoggedDTO.mapFromEntity(entity, token);
+        var result = UserLoggedDTO.MapFromEntity(entity, token);
 
         await _context.SaveChangesAsync();
         return result;
